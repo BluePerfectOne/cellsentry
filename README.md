@@ -8,7 +8,9 @@ After switching mobile operators, frequent connection drops started occurring on
 
 ## Project Status
 
-**Phase 0 — Proof of Concept** (current): Validate that the modem exposes machine-readable signal data via its local web interface before committing to a full implementation.
+**Phase 1 — Data Collection** (current): Prometheus exporter + Grafana dashboard running in Docker Compose, collecting signal metrics continuously.
+
+**Phase 0 — Proof of Concept** ✓ Done: Confirmed the modem exposes machine-readable signal data (RSRP, RSRQ, SINR, network type, temperature, throughput) via its local HTTP+JSON API.
 
 ## Documentation
 
@@ -21,15 +23,29 @@ All design decisions and research live in [`doc/`](doc/):
 | [Language Selection](doc/language-selection.md) | Python vs Rust vs others — rationale |
 | [Monitoring Stack](doc/monitoring-stack.md) | Prometheus + Grafana evaluation and alternatives |
 
-## Quick Start (PoC)
+## Quick Start
+
+### Phase 1 — Full stack (Prometheus + Grafana)
+
+```bash
+cp .env.example .env
+# Edit .env and set MODEM_PASSWORD
+docker compose up -d
+```
+
+| Service | URL |
+| --- | --- |
+| Grafana dashboard | http://localhost:3000 (admin / see `.env`) |
+| Prometheus | http://localhost:9090 |
+| Exporter metrics | http://localhost:9101/metrics |
+
+### Phase 0 — PoC scraper (console output only)
 
 ```bash
 cd poc
 pip install -r requirements.txt
-python scrape_poc.py --host 192.168.100.1
+python scrape_poc.py --host 192.168.100.1 --password <password>
 ```
-
-The PoC will attempt to fetch signal metrics from the modem and print them to the console. Run it with `--help` to see options including password authentication.
 
 ## Modem
 

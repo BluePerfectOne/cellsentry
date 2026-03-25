@@ -29,21 +29,21 @@ The data can then be used as evidence in a formal complaint, for comparison agai
 
 ## Phases
 
-### Phase 0 — Proof of Concept (current)
+### Phase 0 — Proof of Concept ✓ Done
 
-**Question to answer:** Can we extract signal data from the modem's local web interface programmatically?
+**Question answered:** Yes — the modem exposes a full set of signal metrics over its local HTTP+JSON API without firmware modification.
 
-**Done when:** A script can fetch at least RSRP, RSRQ, SINR, and network type from `192.168.100.1` and print them to the console.
+**Validated on:** 2026-03-25, firmware `MC801A_Elisa3_B22`, operator Telia FI.
 
-**Go/No-go decision:** If the API is locked down, requires firmware-level access, or returns no useful data, the project does not make sense to continue.
+**Fields confirmed:** RSRP, RSRQ, SINR, SNR, RSSI, network type (ENDC), LTE band (B20), 5G NR band (n78), PCI, Cell ID, temperature (LTE + 5G), throughput.
 
-### Phase 1 — Data Collection
+### Phase 1 — Data Collection (current)
 
-Once the PoC is validated:
-
-- Formalise the scraper as a small service (see [Language Selection](language-selection.md)).
-- Persist data to a time-series store.
-- Basic drop/recovery detection.
+- Prometheus exporter service (`exporter/`) scrapes the modem every 15 s and serves metrics on `:9101/metrics`.
+- Prometheus stores up to 90 days of time-series data.
+- Grafana dashboard (`grafana/`) visualises signal quality, connection drops, temperature and throughput.
+- Drop/recovery detection: `cellsentry_connection_drops_total` counter increments on every `ppp_connected → other` transition.
+- Entire stack started with `docker compose up -d`.
 
 ### Phase 2 — Visualisation and Alerting
 

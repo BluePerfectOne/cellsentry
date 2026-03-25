@@ -1,0 +1,45 @@
+services:
+
+  exporter:
+    build: ./exporter
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "9101:9101"
+    # The exporter needs to reach 192.168.100.1 on the host's LAN.
+    # On Linux hosts this works with the default bridge network.
+    # On Docker Desktop (Windows/macOS) the modem IP is reachable via
+    # the VM's routing to the host's physical interface.
+
+  prometheus:
+    image: prom/prometheus:v2.51.2
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=90d"
+    depends_on:
+      - exporter
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-cellsentry}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:
+  grafana_data:
