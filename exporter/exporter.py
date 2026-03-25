@@ -23,6 +23,8 @@ from typing import Optional
 import requests
 from prometheus_client import Counter, Gauge, start_http_server
 
+__version__ = "0.1.0"
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -87,7 +89,7 @@ def _make_session() -> requests.Session:
     s = requests.Session()
     s.headers.update({
         "Referer": f"http://{MODEM_HOST}/",
-        "User-Agent": "cellsentry/1.0",
+        "User-Agent": f"cellsentry/{__version__}",
     })
     s.cookies.set("stok", "")
     return s

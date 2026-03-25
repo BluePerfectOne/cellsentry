@@ -23,6 +23,16 @@ All design decisions and research live in [`doc/`](doc/):
 | [Language Selection](doc/language-selection.md) | Python vs Rust vs others — rationale |
 | [Monitoring Stack](doc/monitoring-stack.md) | Prometheus + Grafana evaluation and alternatives |
 
+## Prerequisites
+
+| Requirement | Version used | Notes |
+| --- | --- | --- |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | 4.x | Includes Docker Compose v2; Linux containers mode |
+| Python | 3.12 | Only needed to run the Phase 0 PoC scraper directly |
+| ZTE MC801A | firmware `MC801A_Elisa3_B22` | Other ZTE CPE firmware may work; see `doc/zte-mc801a-api.md` |
+
+No other local installation is required — the full stack runs inside Docker.
+
 ## Quick Start
 
 ### Phase 1 — Full stack (Prometheus + Grafana)
