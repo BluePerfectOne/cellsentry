@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Rust
+target/
+Cargo.lock
+
+# Environment / secrets
+.env
+*.env
+config.local.*
+secrets.*
+
+# IDE
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data / logs collected during development (don't commit measurement data)
+data/
+logs/
+*.csv
+*.db
+*.sqlite
+
+# Grafana / Prometheus local state
+grafana/data/
+prometheus/data/
