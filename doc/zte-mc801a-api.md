@@ -153,6 +153,61 @@ Values are returned as **strings**, not numbers. The scraper must parse them.
 
 ---
 
+## Cell ID Decoding
+
+The `cell_id` field returned by the modem is a **hex-encoded E-UTRAN Cell Identifier (ECI)**, a 28-bit value defined in 3GPP TS 36.413.
+
+### ECI Structure
+
+```
+ ┌────────────────────────────┬────────────┐
+ │       eNB ID (20 bits)     │  Sector    │
+ │                            │  (8 bits)  │
+ └────────────────────────────┴────────────┘
+ Bit 27                   Bit 8  Bit 7  Bit 0
+```
+
+| Component | Bits | Formula | Identifies |
+|---|---|---|---|
+| eNB ID | 27–8 (upper 20 bits) | `ECI >> 8` | Physical base station |
+| Sector | 7–0 (lower 8 bits) | `ECI & 0xFF` | Antenna / cell on that tower |
+
+### Decoding Example
+
+Modem reports: `cell_id = "239550c"`
+
+```
+ECI (decimal) = 0x239550C = 37,384,460
+eNB ID        = 37,384,460 >> 8  = 145,749   ← identifies the tower
+Sector        = 37,384,460 & 0xFF =      12   ← antenna sector on that tower
+```
+
+### Tower Cross-Reference
+
+The **eNB ID** is the stable cross-reference key for public tower databases:
+
+| Service | URL pattern |
+|---|---|
+| OpenCelliD | `https://opencellid.org` → search by MCC, MNC, eNB ID |
+| Mozilla Location Services | `https://location.services.mozilla.com` |
+
+For Telia Finland (MCC=244, MNC=91), search for eNB ID `145749` to locate the serving tower on a map and compare against the operator's published coverage data.
+
+### Prometheus Metrics
+
+The exporter exposes a `cellsentry_cell_decoded_info` gauge (always 1) that carries all decoded values as labels:
+
+| Label | Content |
+|---|---|
+| `cell_id_hex` | Raw hex from modem e.g. `239550c` |
+| `cell_id_dec` | Decimal ECI e.g. `37384460` |
+| `enb_id` | Base station identifier e.g. `145749` |
+| `sector` | Sector / antenna index e.g. `12` |
+| `pci_lte_dec` | LTE Physical Cell ID in decimal e.g. `486` |
+| `earfcn` | LTE EARFCN (channel frequency) |
+
+---
+
 ## Known Quirks and Failure Modes
 
 | Issue | Cause | Mitigation |
