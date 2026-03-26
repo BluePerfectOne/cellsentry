@@ -213,29 +213,29 @@ def _heatmap_array(series: list[tuple[float, float]]) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------------
-# Chart helpers
+# Chart helpers  (light / print-friendly theme)
 # ---------------------------------------------------------------------------
 
-_DARK_BG   = "#1a1a2e"
-_PANEL_BG  = "#16213e"
-_GRID_COL  = "#444444"
+_CHART_BG  = "#ffffff"
+_PANEL_BG  = "#f8f9fa"
+_GRID_COL  = "#dddddd"
 
 
-def _apply_dark_style(ax: plt.Axes) -> None:
+def _apply_light_style(ax: plt.Axes) -> None:
     ax.set_facecolor(_PANEL_BG)
-    ax.tick_params(colors="white", labelsize=7)
-    ax.xaxis.label.set_color("white")
-    ax.yaxis.label.set_color("white")
-    ax.title.set_color("white")
+    ax.tick_params(colors="#333333", labelsize=7)
+    ax.xaxis.label.set_color("#333333")
+    ax.yaxis.label.set_color("#333333")
+    ax.title.set_color("#0d1b2a")
     for spine in ax.spines.values():
         spine.set_edgecolor(_GRID_COL)
-    ax.grid(True, alpha=0.2, color=_GRID_COL)
+    ax.grid(True, alpha=0.6, color=_GRID_COL)
 
 
 def _fig_to_image(fig: plt.Figure, width_pt: float) -> RLImage:
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=CHART_DPI, bbox_inches="tight",
-                facecolor=fig.get_facecolor())
+                facecolor="white")
     plt.close(fig)
     buf.seek(0)
     img = RLImage(buf)
@@ -249,18 +249,18 @@ def _chart_connection(conn_series: list[tuple[float, float]]) -> Optional[RLImag
     if not conn_series:
         return None
     fig, ax = plt.subplots(figsize=(12, 2.5))
-    fig.patch.set_facecolor(_DARK_BG)
-    _apply_dark_style(ax)
+    fig.patch.set_facecolor(_CHART_BG)
+    _apply_light_style(ax)
     ts = [datetime.datetime.fromtimestamp(t, _UTC) for t, _ in conn_series]
     vs = [v for _, v in conn_series]
-    ax.fill_between(ts, vs,         step="post", color="#4caf50", alpha=0.65, label="Connected")
+    ax.fill_between(ts, vs,         step="post", color="#2e7d32", alpha=0.55, label="Connected")
     ax.fill_between(ts, [1 - v for v in vs],
-                    step="post", color="#f44336", alpha=0.65, label="Disconnected")
+                    step="post", color="#c62828", alpha=0.55, label="Disconnected")
     ax.set_ylim(-0.05, 1.15)
     ax.set_yticks([0, 1])
-    ax.set_yticklabels(["Down", "Up"], color="white", fontsize=8)
-    ax.set_title("Connection State", color="white", fontsize=9)
-    ax.legend(fontsize=7, facecolor="#222", labelcolor="white", loc="upper right")
+    ax.set_yticklabels(["Down", "Up"], color="#333333", fontsize=8)
+    ax.set_title("Connection State", color="#0d1b2a", fontsize=9)
+    ax.legend(fontsize=7, facecolor="white", labelcolor="#333333", loc="upper right")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d %H:%M"))
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
     fig.autofmt_xdate(rotation=20, ha="right")
@@ -273,36 +273,36 @@ def _chart_signal(
     nr_data: dict[str, list],
 ) -> RLImage:
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
-    fig.patch.set_facecolor(_DARK_BG)
+    fig.patch.set_facecolor(_CHART_BG)
     for ax in (ax1, ax2):
-        _apply_dark_style(ax)
+        _apply_light_style(ax)
 
     lte_plot = [
-        ("lte_rsrp", "LTE RSRP", "#4fc3f7"),
-        ("lte_rsrq", "LTE RSRQ", "#81c784"),
-        ("lte_snr",  "LTE SNR",  "#ffb74d"),
+        ("lte_rsrp", "LTE RSRP", "#1565c0"),
+        ("lte_rsrq", "LTE RSRQ", "#2e7d32"),
+        ("lte_snr",  "LTE SNR",  "#e65100"),
     ]
     for key, label, color in lte_plot:
         series = lte_data.get(key, [])
         if series:
             ts = [datetime.datetime.fromtimestamp(t, _UTC) for t, _ in series]
             ax1.plot(ts, [v for _, v in series], lw=0.8, color=color, label=label, alpha=0.9)
-    ax1.set_ylabel("dBm / dB", color="white", fontsize=8)
-    ax1.set_title("LTE Signal Quality", color="white", fontsize=9)
-    ax1.legend(fontsize=7, facecolor="#222", labelcolor="white", loc="upper right")
+    ax1.set_ylabel("dBm / dB", color="#333333", fontsize=8)
+    ax1.set_title("LTE Signal Quality", color="#0d1b2a", fontsize=9)
+    ax1.legend(fontsize=7, facecolor="white", labelcolor="#333333", loc="upper right")
 
     nr_plot = [
-        ("nr_rsrp", "5G NR RSRP", "#ce93d8"),
-        ("nr_sinr", "5G NR SINR", "#80cbc4"),
+        ("nr_rsrp", "5G NR RSRP", "#6a1b9a"),
+        ("nr_sinr", "5G NR SINR", "#00695c"),
     ]
     for key, label, color in nr_plot:
         series = nr_data.get(key, [])
         if series:
             ts = [datetime.datetime.fromtimestamp(t, _UTC) for t, _ in series]
             ax2.plot(ts, [v for _, v in series], lw=0.8, color=color, label=label, alpha=0.9)
-    ax2.set_ylabel("dBm / dB", color="white", fontsize=8)
-    ax2.set_title("5G NR Signal Quality", color="white", fontsize=9)
-    ax2.legend(fontsize=7, facecolor="#222", labelcolor="white", loc="upper right")
+    ax2.set_ylabel("dBm / dB", color="#333333", fontsize=8)
+    ax2.set_title("5G NR Signal Quality", color="#0d1b2a", fontsize=9)
+    ax2.legend(fontsize=7, facecolor="white", labelcolor="#333333", loc="upper right")
     ax2.xaxis.set_major_formatter(mdates.DateFormatter("%b %d %H:%M"))
     ax2.xaxis.set_major_locator(mdates.AutoDateLocator())
     fig.autofmt_xdate(rotation=20, ha="right")
@@ -312,19 +312,19 @@ def _chart_signal(
 
 def _chart_heatmap(data: np.ndarray, title: str, unit: str) -> RLImage:
     fig, ax = plt.subplots(figsize=(12, 3))
-    fig.patch.set_facecolor(_DARK_BG)
-    _apply_dark_style(ax)
+    fig.patch.set_facecolor(_CHART_BG)
+    _apply_light_style(ax)
     masked = np.ma.masked_invalid(data)
     im = ax.imshow(masked, aspect="auto", cmap="RdYlGn", interpolation="nearest")
     cbar = fig.colorbar(im, ax=ax, pad=0.01, shrink=0.8)
-    cbar.set_label(unit, color="white", fontsize=8)
-    cbar.ax.tick_params(colors="white")
+    cbar.set_label(unit, color="#333333", fontsize=8)
+    cbar.ax.tick_params(colors="#333333")
     days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     ax.set_yticks(range(7))
-    ax.set_yticklabels(days, color="white", fontsize=8)
+    ax.set_yticklabels(days, color="#333333", fontsize=8)
     ax.set_xticks(range(0, 24, 2))
-    ax.set_xticklabels([f"{h:02d}:00" for h in range(0, 24, 2)], color="white", fontsize=7)
-    ax.set_title(title, color="white", fontsize=9)
+    ax.set_xticklabels([f"{h:02d}:00" for h in range(0, 24, 2)], color="#333333", fontsize=7)
+    ax.set_title(title, color="#0d1b2a", fontsize=9)
     fig.tight_layout()
     return _fig_to_image(fig, CHART_W)
 
@@ -815,8 +815,8 @@ def _parse_args() -> argparse.Namespace:
                    help="Contract or customer reference number")
     p.add_argument("--prometheus",   default="http://localhost:9090",
                    help="Prometheus base URL (default: http://localhost:9090)")
-    p.add_argument("--output",       default="report.pdf",
-                   help="Output PDF path (default: report.pdf)")
+    p.add_argument("--output",       default=None,
+                   help="Output PDF path (default: cellsentry-report-<YYYYMMDDTHHMMSS>.pdf)")
     return p.parse_args()
 
 
@@ -837,6 +837,10 @@ def main() -> None:
     if end_dt < start_dt:
         print("ERROR: --to must be on or after --from", file=sys.stderr)
         sys.exit(1)
+
+    if args.output is None:
+        stamp = datetime.datetime.now(_UTC).strftime("%Y%m%dT%H%M%S")
+        args.output = f"cellsentry-report-{stamp}.pdf"
 
     start_ts = int(start_dt.timestamp())
     end_ts   = int(end_dt.timestamp())
