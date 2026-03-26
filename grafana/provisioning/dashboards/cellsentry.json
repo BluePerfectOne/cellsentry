@@ -304,14 +304,14 @@
     },
     {
       "id": 12,
-      "title": "LTE PCI (decimal)",
+      "title": "LTE PCI (hex)",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 8, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{pci_lte_dec}}",
+          "expr": "cellsentry_modem_info",
+          "legendFormat": "{{pci_lte}}",
           "instant": true,
           "refId": "A"
         }
@@ -328,86 +328,14 @@
     },
     {
       "id": 13,
-      "title": "Cell ID (decimal)",
+      "title": "Cell ID (hex)",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 12, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{cell_id_dec}}",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
-        "orientation": "auto",
-        "textMode": "name",
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center"
-      },
-      "fieldConfig": { "defaults": {}, "overrides": [] }
-    },
-    {
-      "id": 16,
-      "title": "eNB ID (base station)",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 3, "x": 16, "y": 4 },
-      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
-      "targets": [
-        {
-          "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{enb_id}}",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
-        "orientation": "auto",
-        "textMode": "name",
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center"
-      },
-      "fieldConfig": { "defaults": {}, "overrides": [] }
-    },
-    {
-      "id": 18,
-      "title": "Sector",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 1, "x": 19, "y": 4 },
-      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
-      "targets": [
-        {
-          "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{sector}}",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
-        "orientation": "auto",
-        "textMode": "name",
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center"
-      },
-      "fieldConfig": { "defaults": {}, "overrides": [] }
-    },
-    {
-      "id": 17,
-      "title": "EARFCN (LTE channel)",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 4 },
-      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
-      "targets": [
-        {
-          "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{earfcn}}",
+          "expr": "cellsentry_modem_info",
+          "legendFormat": "{{cell_id}}",
           "instant": true,
           "refId": "A"
         }
@@ -426,7 +354,7 @@
       "id": 14,
       "title": "5G Band",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 8 },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
@@ -448,9 +376,153 @@
     },
     {
       "id": 15,
-      "title": "5G PCI",
+      "title": "5G PCI (hex)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_modem_info",
+          "legendFormat": "{{pci_5g}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 16,
+      "title": "LTE PCI (decimal)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{pci_lte_dec}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 17,
+      "title": "Cell ID (decimal)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{cell_id_dec}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 18,
+      "title": "eNB ID (base station)",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 8, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{enb_id}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 19,
+      "title": "Sector",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{sector}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 20,
+      "title": "EARFCN (LTE channel)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{earfcn}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 21,
+      "title": "5G PCI (decimal)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
