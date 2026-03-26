@@ -633,11 +633,6 @@
           "refId": "A"
         },
         {
-          "expr": "cellsentry_5gnr_rsrq_db",
-          "legendFormat": "NR RSRQ",
-          "refId": "B"
-        },
-        {
           "expr": "cellsentry_5gnr_sinr_db",
           "legendFormat": "NR SINR",
           "refId": "C"
@@ -661,7 +656,8 @@
             "gradientMode": "none",
             "spanNulls": false,
             "showPoints": "never",
-            "drawStyle": "line"
+            "drawStyle": "line",
+            "axisLabel": "NR SINR (dB)"
           }
         },
         "overrides": [
@@ -669,6 +665,8 @@
             "matcher": { "id": "byName", "options": "NR RSRP" },
             "properties": [
               { "id": "unit", "value": "dBm" },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "custom.axisLabel", "value": "NR RSRP (dBm)" },
               {
                 "id": "thresholds",
                 "value": {
