@@ -39,6 +39,9 @@ logs/
 *.db
 *.sqlite
 
+# Generated reports
+*.pdf
+
 # Grafana / Prometheus local state
 grafana/data/
 prometheus/data/
