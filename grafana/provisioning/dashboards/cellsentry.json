@@ -375,6 +375,30 @@
       "fieldConfig": { "defaults": {}, "overrides": [] }
     },
     {
+      "id": 17,
+      "title": "TAC (LAC for OpenCelliD)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{tac}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
       "id": 14,
       "title": "5G Band",
       "type": "stat",

@@ -51,6 +51,7 @@ CMD_FIELDS = ",".join([
     "wan_active_band", "wan_active_channel", "wan_lte_ca",
     "Z5g_rsrp", "Z5g_RSRQ", "Z5g_SINR",
     "nr5g_action_band", "nr5g_action_channel", "nr5g_pci",
+    "tac",
     "pm_sensor_mdm", "pm_modem_5g",
     "realtime_rx_thrpt", "realtime_tx_thrpt",
 ])
@@ -95,7 +96,9 @@ g_scrape_duration = Gauge("cellsentry_scrape_duration_seconds",  "Duration of la
 #                   on that base station (typically 0-2 per tower).
 #   pci_lte_dec   — LTE Physical Cell ID in decimal (e.g. "486")
 #   earfcn        — LTE downlink channel (EARFCN) for OpenCelliD lookup
-_CELL_DECODED_LABELS = ["cell_id_hex", "cell_id_dec", "enb_id", "sector", "pci_lte_dec", "earfcn"]
+#   tac           — Tracking Area Code (decimal).  OpenCelliD calls this
+#                   "LAC" in its LTE cell search form.
+_CELL_DECODED_LABELS = ["cell_id_hex", "cell_id_dec", "enb_id", "sector", "pci_lte_dec", "earfcn", "tac"]
 g_cell_decoded    = Gauge("cellsentry_cell_decoded_info",
                           "Decoded cell identifiers (always 1); see label names for field descriptions",
                           _CELL_DECODED_LABELS)
@@ -282,13 +285,14 @@ def update_metrics(data: dict) -> None:
     cell_id_hex = _sval(data, "cell_id")
     pci_lte_hex = _sval(data, "lte_pci")
     earfcn      = _sval(data, "wan_active_channel")
+    tac         = _sval(data, "tac") or ""
     if cell_id_hex:
         try:
             eci        = int(cell_id_hex, 16)
             enb_id     = eci >> 8
             sector     = eci & 0xFF
             pci_dec    = str(int(pci_lte_hex, 16)) if pci_lte_hex else ""
-            decoded = (cell_id_hex, str(eci), str(enb_id), str(sector), pci_dec, earfcn)
+            decoded = (cell_id_hex, str(eci), str(enb_id), str(sector), pci_dec, earfcn, tac)
             g_cell_decoded.labels(*decoded).set(1)
         except (ValueError, TypeError):
             pass

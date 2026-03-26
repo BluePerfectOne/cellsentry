@@ -117,6 +117,7 @@ The response is a flat JSON object with field names as keys.
 | `wan_ipaddr` | Current WAN IPv4 address |
 | `ipv6_wan_ipaddr` | Current WAN IPv6 address |
 | `cell_id` | Serving LTE Cell ID (hex) |
+| `tac` | Tracking Area Code (decimal). OpenCelliD uses this as the "LAC" field in its LTE cell search. |
 | `realtime_rx_thrpt` | Current download throughput (bytes/s) |
 | `realtime_tx_thrpt` | Current upload throughput (bytes/s) |
 | `realtime_rx_bytes` | Session total bytes received |
@@ -191,6 +192,15 @@ The **eNB ID** is the stable cross-reference key for public tower databases:
 | OpenCelliD | `https://opencellid.org` → search by MCC, MNC, eNB ID |
 | Mozilla Location Services | `https://location.services.mozilla.com` |
 
+> **OpenCelliD search requires four fields:** MCC, MNC, LAC, and Cell ID.
+> For LTE, **LAC = TAC** (Tracking Area Code) — the modem exposes this as the `tac` field.
+> Use the **eNB ID** as the Cell ID value in the search form.
+>
+> Example for this installation (Telia Finland):
+> - MCC: `244`, MNC: `91`
+> - LAC (= TAC): value from `tac` modem field
+> - Cell ID: `145749` (eNB ID)
+
 For Telia Finland (MCC=244, MNC=91), search for eNB ID `145749` to locate the serving tower on a map and compare against the operator's published coverage data.
 
 ### Prometheus Metrics
@@ -205,6 +215,7 @@ The exporter exposes a `cellsentry_cell_decoded_info` gauge (always 1) that carr
 | `sector` | Sector / antenna index e.g. `12` |
 | `pci_lte_dec` | LTE Physical Cell ID in decimal e.g. `486` |
 | `earfcn` | LTE EARFCN (channel frequency) |
+| `tac` | Tracking Area Code (= LAC in OpenCelliD) |
 
 ---
 
