@@ -550,23 +550,23 @@
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_lte_rsrp_dbm",
-          "legendFormat": "RSRP",
+          "expr": "cellsentry_lte_rsrp_dbm * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "legendFormat": "RSRP [eNB {{enb_id}} s{{sector}}]",
           "refId": "A"
         },
         {
-          "expr": "cellsentry_lte_rsrq_db",
-          "legendFormat": "RSRQ",
+          "expr": "cellsentry_lte_rsrq_db * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "legendFormat": "RSRQ [eNB {{enb_id}} s{{sector}}]",
           "refId": "B"
         },
         {
-          "expr": "cellsentry_lte_snr_db",
-          "legendFormat": "SNR",
+          "expr": "cellsentry_lte_snr_db * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "legendFormat": "SNR [eNB {{enb_id}} s{{sector}}]",
           "refId": "C"
         },
         {
-          "expr": "cellsentry_lte_rssi_dbm",
-          "legendFormat": "RSSI",
+          "expr": "cellsentry_lte_rssi_dbm * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "legendFormat": "RSSI [eNB {{enb_id}} s{{sector}}]",
           "refId": "D"
         }
       ],
@@ -593,7 +593,7 @@
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "RSRP" },
+            "matcher": { "id": "byFrameRefID", "options": "A" },
             "properties": [
               { "id": "unit", "value": "dBm" },
               {
@@ -612,7 +612,7 @@
             ]
           },
           {
-            "matcher": { "id": "byName", "options": "RSSI" },
+            "matcher": { "id": "byFrameRefID", "options": "D" },
             "properties": [
               { "id": "unit", "value": "dBm" }
             ]
@@ -628,13 +628,13 @@
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_5gnr_rsrp_dbm",
-          "legendFormat": "NR RSRP",
+          "expr": "cellsentry_5gnr_rsrp_dbm * on() group_left(pci_5g_dec) cellsentry_cell_decoded_info",
+          "legendFormat": "NR RSRP [5G PCI {{pci_5g_dec}}]",
           "refId": "A"
         },
         {
-          "expr": "cellsentry_5gnr_sinr_db",
-          "legendFormat": "NR SINR",
+          "expr": "cellsentry_5gnr_sinr_db * on() group_left(pci_5g_dec) cellsentry_cell_decoded_info",
+          "legendFormat": "NR SINR [5G PCI {{pci_5g_dec}}]",
           "refId": "C"
         }
       ],
@@ -662,7 +662,7 @@
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "NR RSRP" },
+            "matcher": { "id": "byFrameRefID", "options": "A" },
             "properties": [
               { "id": "unit", "value": "dBm" },
               { "id": "custom.axisPlacement", "value": "right" },
