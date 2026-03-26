@@ -125,6 +125,61 @@ The response is a flat JSON object with field names as keys.
 | `pm_sensor_mdm` | LTE modem temperature (°C) |
 | `pm_modem_5g` | 5G modem temperature (°C) |
 
+### Signal Quality Reference
+
+The tables below show the quality buckets commonly used in the industry when interpreting cellular signal measurements. They are derived from 3GPP measurement ranges (TS 38.133 for 5G NR, TS 36.133 for LTE) and are widely used in field-engineering practice.
+
+> **Important:** These are engineering conventions, not regulatory thresholds. TRAFICOM (Finnish comms regulator) and Telia Finland's consumer agreement do not define a minimum RSRP floor. For a formal complaint, rely on **connection drop counts and outage durations** from the Prometheus data — those are objective facts from the modem itself.
+
+#### 5G NR RSRP
+
+| Quality | RSRP range | Notes |
+| --- | --- | --- |
+| Excellent | > −85 dBm | Full throughput expected |
+| Good | −85 to −100 dBm | Normal operation |
+| Fair / Poor | −100 to −110 dBm | Degraded throughput likely |
+| Very poor | < −110 dBm | Cell edge; frequent drop risk |
+
+*Observed on this installation: typically −100 to −105 dBm (Fair/Poor), which is consistent with the distance from eNB 145749.*
+
+#### 5G NR SINR
+
+| Quality | SINR range | Notes |
+| --- | --- | --- |
+| Excellent | > 20 dB | — |
+| Good | 13 – 20 dB | — |
+| Fair | 0 – 13 dB | — |
+| Poor | < 0 dB | Noise floor dominant; unreliable |
+
+*Note: `Z5g_RSRQ` is not populated by firmware `MC801A_Elisa3_B22` — SINR is the only 5G NR quality ratio available.*
+
+#### LTE RSRP (anchor cell in NSA)
+
+| Quality | RSRP range | Notes |
+| --- | --- | --- |
+| Excellent | > −85 dBm | — |
+| Good | −85 to −95 dBm | — |
+| Fair | −95 to −105 dBm | — |
+| Poor | < −105 dBm | Risk of handoff to weaker cell |
+
+#### LTE RSRQ
+
+| Quality | RSRQ range | Notes |
+| --- | --- | --- |
+| Excellent | > −10 dB | Low inter-cell interference |
+| Good | −10 to −15 dB | — |
+| Fair | −15 to −20 dB | Significant interference |
+| Poor | < −20 dB | High interference; degraded |
+
+#### LTE SNR
+
+| Quality | SNR range | Notes |
+| --- | --- | --- |
+| Excellent | > 20 dB | — |
+| Good | 13 – 20 dB | — |
+| Fair | 0 – 13 dB | — |
+| Poor | < 0 dB | Unreliable; high error rate |
+
 ### Example Request
 
 ```
@@ -198,7 +253,7 @@ The **eNB ID** combined with **EARFCN** are the practical cross-reference keys f
 The exporter exposes a `cellsentry_cell_decoded_info` gauge (always 1) that carries all decoded values as labels:
 
 | Label | Content |
-|---|---|
+| --- | --- |
 | `cell_id_hex` | Raw hex from modem e.g. `239550c` |
 | `cell_id_dec` | Decimal ECI e.g. `37384460` |
 | `enb_id` | Base station identifier e.g. `145749` |
