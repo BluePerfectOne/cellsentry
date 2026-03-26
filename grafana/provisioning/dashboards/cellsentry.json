@@ -304,14 +304,14 @@
     },
     {
       "id": 12,
-      "title": "LTE PCI",
+      "title": "LTE PCI (decimal)",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 8, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_modem_info",
-          "legendFormat": "{{pci_lte}}",
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{pci_lte_dec}}",
           "instant": true,
           "refId": "A"
         }
@@ -328,14 +328,38 @@
     },
     {
       "id": 13,
-      "title": "Cell ID",
+      "title": "Cell ID (decimal)",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 12, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_modem_info",
-          "legendFormat": "{{cell_id}}",
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{cell_id_dec}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": { "defaults": {}, "overrides": [] }
+    },
+    {
+      "id": 16,
+      "title": "eNB ID (base station)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{enb_id}} / sector {{sector}}",
           "instant": true,
           "refId": "A"
         }
@@ -354,7 +378,7 @@
       "id": 14,
       "title": "5G Band",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 4 },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
@@ -378,7 +402,7 @@
       "id": 15,
       "title": "5G PCI",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 4 },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
@@ -402,7 +426,7 @@
       "id": 7,
       "title": "LTE Signal Quality",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
@@ -480,7 +504,7 @@
       "id": 8,
       "title": "5G NR Signal Quality",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
@@ -547,7 +571,7 @@
       "id": 9,
       "title": "Throughput",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {

@@ -48,7 +48,7 @@ CMD_FIELDS = ",".join([
     "network_type", "ppp_status", "wan_ipaddr", "network_provider", "signalbar",
     "lte_rssi", "lte_rsrp", "lte_rsrq", "lte_snr",
     "lte_ca_pcell_band", "lte_ca_scell_band", "lte_pci", "cell_id",
-    "wan_active_band", "wan_lte_ca",
+    "wan_active_band", "wan_active_channel", "wan_lte_ca",
     "Z5g_rsrp", "Z5g_RSRQ", "Z5g_SINR",
     "nr5g_action_band", "nr5g_action_channel", "nr5g_pci",
     "pm_sensor_mdm", "pm_modem_5g",
@@ -80,6 +80,25 @@ g_throughput      = Gauge("cellsentry_throughput_bps",           "Real-time thro
 c_drops           = Counter("cellsentry_connection_drops_total", "Total connection drop events detected")
 g_scrape_success  = Gauge("cellsentry_scrape_success",           "1 = last modem scrape succeeded, 0 = failed")
 g_scrape_duration = Gauge("cellsentry_scrape_duration_seconds",  "Duration of last successful modem scrape")
+
+# Decoded cell identifiers.
+# The modem returns cell_id and pci_lte as hex strings.  This metric exposes
+# the human-useful derived values as labels:
+#
+#   cell_id_hex   — raw hex from modem (e.g. "239550c")
+#   cell_id_dec   — full ECI in decimal (e.g. "37384460")
+#   enb_id        — eNB ID = ECI >> 8, upper 20 bits.  This identifies the
+#                   physical base station.  Cross-reference against
+#                   Traficom's cell database or OpenCelliD using
+#                   eNB ID + operator MCC/MNC (244-91 for Telia Finland).
+#   sector        — ECI & 0xFF, lower 8 bits.  Identifies the sector/antenna
+#                   on that base station (typically 0-2 per tower).
+#   pci_lte_dec   — LTE Physical Cell ID in decimal (e.g. "486")
+#   earfcn        — LTE downlink channel (EARFCN) for OpenCelliD lookup
+_CELL_DECODED_LABELS = ["cell_id_hex", "cell_id_dec", "enb_id", "sector", "pci_lte_dec", "earfcn"]
+g_cell_decoded    = Gauge("cellsentry_cell_decoded_info",
+                          "Decoded cell identifiers (always 1); see label names for field descriptions",
+                          _CELL_DECODED_LABELS)
 
 # ---------------------------------------------------------------------------
 # Modem HTTP client
@@ -255,6 +274,24 @@ def update_metrics(data: dict) -> None:
             pass
     g_modem_info.labels(*info).set(1)
     _last_info_labels = info
+
+    # --- Decoded cell identifiers ---
+    # The modem returns cell_id and lte_pci as lowercase hex strings.
+    # Derive the eNB ID (base station) and sector from the ECI:
+    #   ECI (28-bit)  =  eNB ID (upper 20 bits) << 8  |  sector (lower 8 bits)
+    cell_id_hex = _sval(data, "cell_id")
+    pci_lte_hex = _sval(data, "lte_pci")
+    earfcn      = _sval(data, "wan_active_channel")
+    if cell_id_hex:
+        try:
+            eci        = int(cell_id_hex, 16)
+            enb_id     = eci >> 8
+            sector     = eci & 0xFF
+            pci_dec    = str(int(pci_lte_hex, 16)) if pci_lte_hex else ""
+            decoded = (cell_id_hex, str(eci), str(enb_id), str(sector), pci_dec, earfcn)
+            g_cell_decoded.labels(*decoded).set(1)
+        except (ValueError, TypeError):
+            pass
 
     # --- LTE signal ---
     for key, gauge in (
