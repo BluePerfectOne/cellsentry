@@ -348,6 +348,29 @@ def update_metrics(data: dict) -> None:
 # Scrape loop
 # ---------------------------------------------------------------------------
 
+# Fields that require an active authenticated session to return real values.
+# If all of these are "---" while other fields (ppp_status, network_type) look
+# fine, it means the session was stolen by another login (e.g. the admin web UI).
+_AUTH_REQUIRED_FIELDS = (
+    "lte_rsrp", "lte_rsrq", "lte_snr", "lte_rssi",
+    "Z5g_rsrp", "pm_sensor_mdm",
+)
+
+
+def _session_stolen(data: dict) -> bool:
+    """Return True if authenticated-only fields are all unavailable.
+
+    This catches the case where another device logged into the modem web UI,
+    invalidating the exporter's session cookie. Unlike _all_unavailable(),
+    this check fires even when unauthenticated fields (ppp_status, network_type)
+    still return real values.
+    """
+    return bool(data) and all(
+        data.get(k, UNAVAILABLE) in (UNAVAILABLE, "", None)
+        for k in _AUTH_REQUIRED_FIELDS
+    )
+
+
 def _all_unavailable(data: dict) -> bool:
     return bool(data) and all(v in (UNAVAILABLE, "", None) for v in data.values())
 
@@ -383,10 +406,11 @@ def scrape_loop() -> None:
 
             data = _get_cmd(session, CMD_FIELDS)
 
-            if _all_unavailable(data):
-                # Belt-and-suspenders: all fields went "---" unexpectedly.
+            if _all_unavailable(data) or _session_stolen(data):
+                # Session lost — either fully expired or stolen by another login
+                # (e.g. someone opened the modem's admin web UI).
                 # Reset gauges so Grafana shows a gap, not frozen values.
-                log.info("All fields unavailable after auth; forcing re-auth.")
+                log.info("Signal fields unavailable; session lost or stolen — re-authenticating.")
                 _reset_signal_gauges()
                 authenticated = False
                 g_scrape_success.set(0)
