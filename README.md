@@ -22,6 +22,7 @@ All design decisions and research live in [`doc/`](doc/):
 | [ZTE MC801A API Research](doc/zte-mc801a-api.md) | How to extract signal data from the modem |
 | [Language Selection](doc/language-selection.md) | Python vs Rust vs others — rationale |
 | [Monitoring Stack](doc/monitoring-stack.md) | Prometheus + Grafana evaluation and alternatives |
+| [Report Generator](doc/report-generator.md) | PDF complaint report design — structure, metrics, 3GPP thresholds |
 
 ## Prerequisites
 
