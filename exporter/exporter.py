@@ -230,6 +230,7 @@ _NaN = float("nan")
 
 _prev_ppp_status: Optional[str] = None
 _last_info_labels: Optional[tuple] = None
+_last_decoded_labels: Optional[tuple] = None
 
 # Signal gauges that should show NaN (absent) rather than 0 when the modem
 # reports no data for a field.  Initialized to NaN at startup so that gauges
@@ -300,7 +301,14 @@ def update_metrics(data: dict) -> None:
             pci_dec    = str(int(pci_lte_hex, 16)) if pci_lte_hex else ""
             pci_5g_dec = str(int(pci_5g_hex, 16)) if pci_5g_hex else ""
             decoded = (cell_id_hex, str(eci), str(enb_id), str(sector), pci_dec, pci_5g_dec, earfcn)
+            global _last_decoded_labels
+            if _last_decoded_labels is not None and _last_decoded_labels != decoded:
+                try:
+                    g_cell_decoded.remove(*_last_decoded_labels)
+                except Exception:
+                    pass
             g_cell_decoded.labels(*decoded).set(1)
+            _last_decoded_labels = decoded
         except (ValueError, TypeError):
             pass
 

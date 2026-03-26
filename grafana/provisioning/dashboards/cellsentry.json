@@ -372,18 +372,7 @@
         "graphMode": "none",
         "justifyMode": "center"
       },
-      "fieldConfig": {
-        "defaults": {
-          "links": [
-            {
-              "title": "Look up on CellMapper",
-              "url": "https://www.cellmapper.net/map?MCC=244&MNC=91&type=LTE&id=${__series.name}",
-              "targetBlank": true
-            }
-          ]
-        },
-        "overrides": []
-      }
+      "fieldConfig": { "defaults": {}, "overrides": [] }
     },
     {
       "id": 18,
