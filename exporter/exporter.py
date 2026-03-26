@@ -198,8 +198,20 @@ def _sval(data: dict, key: str) -> str:
     return "" if (not v or v == UNAVAILABLE) else str(v)
 
 
+_NaN = float("nan")
+
 _prev_ppp_status: Optional[str] = None
 _last_info_labels: Optional[tuple] = None
+
+# Signal gauges that should show NaN (absent) rather than 0 when the modem
+# reports no data for a field.  Initialized to NaN at startup so that gauges
+# which are never populated (e.g. Z5g_RSRQ on some firmware states) never
+# appear as a spurious flat-zero line in Grafana.
+_SIGNAL_GAUGES_PLAIN = (g_lte_rssi, g_lte_rsrp, g_lte_rsrq, g_lte_snr,
+                        g_5g_rsrp, g_5g_rsrq, g_5g_sinr, g_signal_bars)
+
+for _g in _SIGNAL_GAUGES_PLAIN:
+    _g.set(_NaN)
 
 
 def update_metrics(data: dict) -> None:
@@ -215,8 +227,7 @@ def update_metrics(data: dict) -> None:
 
     # --- Signal bars ---
     bars = _fval(data, "signalbar")
-    if bars is not None:
-        g_signal_bars.set(bars)
+    g_signal_bars.set(bars if bars is not None else _NaN)
 
     # --- Modem info labels (band, cell, network type) ---
     # Remove old label combination first to avoid stale series when band/cell changes.
@@ -244,8 +255,7 @@ def update_metrics(data: dict) -> None:
         ("lte_snr",  g_lte_snr),
     ):
         v = _fval(data, key)
-        if v is not None:
-            gauge.set(v)
+        gauge.set(v if v is not None else _NaN)
 
     # --- 5G NR signal ---
     for key, gauge in (
@@ -254,8 +264,7 @@ def update_metrics(data: dict) -> None:
         ("Z5g_SINR", g_5g_sinr),
     ):
         v = _fval(data, key)
-        if v is not None:
-            gauge.set(v)
+        gauge.set(v if v is not None else _NaN)
 
     # --- Temperature ---
     for key, label in (("pm_sensor_mdm", "lte"), ("pm_modem_5g", "5g")):
