@@ -348,18 +348,64 @@
         "graphMode": "none",
         "justifyMode": "center"
       },
-      "fieldConfig": { "defaults": {}, "overrides": [] }
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Look up on CellMapper",
+              "url": "https://www.cellmapper.net/map?MCC=244&MNC=91&type=LTE&id=${__series.name}",
+              "targetBlank": true
+            }
+          ]
+        },
+        "overrides": []
+      }
     },
     {
       "id": 16,
       "title": "eNB ID (base station)",
       "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 4 },
+      "gridPos": { "h": 4, "w": 3, "x": 16, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
           "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{enb_id}} / sector {{sector}}",
+          "legendFormat": "{{enb_id}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "values": false, "calcs": ["lastNotNull"], "fields": "" },
+        "orientation": "auto",
+        "textMode": "name",
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Look up on CellMapper",
+              "url": "https://www.cellmapper.net/map?MCC=244&MNC=91&type=LTE&id=${__series.name}",
+              "targetBlank": true
+            }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 18,
+      "title": "Sector",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 1, "x": 19, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
+      "targets": [
+        {
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{sector}}",
           "instant": true,
           "refId": "A"
         }
