@@ -550,22 +550,22 @@
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_lte_rsrp_dbm * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "expr": "cellsentry_lte_rsrp_dbm * on() group_left(enb_id, sector) topk(1, cellsentry_cell_decoded_info)",
           "legendFormat": "RSRP [eNB {{enb_id}} s{{sector}}]",
           "refId": "A"
         },
         {
-          "expr": "cellsentry_lte_rsrq_db * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "expr": "cellsentry_lte_rsrq_db * on() group_left(enb_id, sector) topk(1, cellsentry_cell_decoded_info)",
           "legendFormat": "RSRQ [eNB {{enb_id}} s{{sector}}]",
           "refId": "B"
         },
         {
-          "expr": "cellsentry_lte_snr_db * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "expr": "cellsentry_lte_snr_db * on() group_left(enb_id, sector) topk(1, cellsentry_cell_decoded_info)",
           "legendFormat": "SNR [eNB {{enb_id}} s{{sector}}]",
           "refId": "C"
         },
         {
-          "expr": "cellsentry_lte_rssi_dbm * on() group_left(enb_id, sector) cellsentry_cell_decoded_info",
+          "expr": "cellsentry_lte_rssi_dbm * on() group_left(enb_id, sector) topk(1, cellsentry_cell_decoded_info)",
           "legendFormat": "RSSI [eNB {{enb_id}} s{{sector}}]",
           "refId": "D"
         }
@@ -628,12 +628,12 @@
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_5gnr_rsrp_dbm * on() group_left(pci_5g_dec) cellsentry_cell_decoded_info",
+          "expr": "cellsentry_5gnr_rsrp_dbm * on() group_left(pci_5g_dec) topk(1, cellsentry_cell_decoded_info)",
           "legendFormat": "NR RSRP [5G PCI {{pci_5g_dec}}]",
           "refId": "A"
         },
         {
-          "expr": "cellsentry_5gnr_sinr_db * on() group_left(pci_5g_dec) cellsentry_cell_decoded_info",
+          "expr": "cellsentry_5gnr_sinr_db * on() group_left(pci_5g_dec) topk(1, cellsentry_cell_decoded_info)",
           "legendFormat": "NR SINR [5G PCI {{pci_5g_dec}}]",
           "refId": "C"
         }
