@@ -44,6 +44,11 @@ log = logging.getLogger("cellsentry")
 
 UNAVAILABLE = "---"
 
+# Proactively re-authenticate this many seconds after the last successful login.
+# The ZTE MC801A web server drops sessions at ~10 minutes of inactivity; we
+# refresh at 8 minutes so there is never a gap in data collection.
+_AUTH_TIMEOUT = 480  # seconds
+
 CMD_FIELDS = ",".join([
     "network_type", "ppp_status", "wan_ipaddr", "network_provider", "signalbar",
     "lte_rssi", "lte_rsrp", "lte_rsrq", "lte_snr",
@@ -340,13 +345,26 @@ def _all_unavailable(data: dict) -> bool:
 def scrape_loop() -> None:
     session = _make_session()
     authenticated = False
+    auth_time: float = 0.0
 
     while True:
-        t0 = time.monotonic()
+        now = time.monotonic()
+        t0 = now
         try:
+            # Proactively re-authenticate before the modem's ~10 min session timeout.
+            # This is the primary guard; _all_unavailable() below is a fallback.
+            if authenticated and (now - auth_time) >= _AUTH_TIMEOUT:
+                log.info(
+                    "Session age %.0fs >= %ds; re-authenticating proactively.",
+                    now - auth_time, _AUTH_TIMEOUT,
+                )
+                authenticated = False
+
             if not authenticated:
                 authenticated = authenticate(session)
-                if not authenticated:
+                if authenticated:
+                    auth_time = time.monotonic()
+                else:
                     g_scrape_success.set(0)
                     log.warning("Authentication failed; will retry in %ds.", SCRAPE_INTERVAL)
                     time.sleep(SCRAPE_INTERVAL)
@@ -356,10 +374,9 @@ def scrape_loop() -> None:
             data = _get_cmd(session, CMD_FIELDS)
 
             if _all_unavailable(data):
-                # Session likely expired — reset gauges to NaN so Grafana shows
-                # a gap rather than the last real value appearing frozen/flat.
-                # Do NOT update the drop counter — this is not a real drop.
-                log.info("All fields unavailable; session may have expired. Re-authenticating.")
+                # Belt-and-suspenders: all fields went "---" unexpectedly.
+                # Reset gauges so Grafana shows a gap, not frozen values.
+                log.info("All fields unavailable after auth; forcing re-auth.")
                 _reset_signal_gauges()
                 authenticated = False
                 g_scrape_success.set(0)
@@ -381,6 +398,14 @@ def scrape_loop() -> None:
         except requests.RequestException as exc:
             log.warning("HTTP error: %s", exc)
             g_scrape_success.set(0)
+        except ValueError as exc:
+            # json.JSONDecodeError (subclass of ValueError) fires when the modem
+            # returns an HTML error page instead of JSON — a clear sign the
+            # session was dropped unexpectedly before the 8-minute proactive refresh.
+            log.warning("Response parse error (session likely expired early): %s", exc)
+            _reset_signal_gauges()
+            g_scrape_success.set(0)
+            authenticated = False
         except Exception as exc:
             log.error("Unexpected error: %s", exc, exc_info=True)
             g_scrape_success.set(0)
