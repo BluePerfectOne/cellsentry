@@ -117,7 +117,6 @@ The response is a flat JSON object with field names as keys.
 | `wan_ipaddr` | Current WAN IPv4 address |
 | `ipv6_wan_ipaddr` | Current WAN IPv6 address |
 | `cell_id` | Serving LTE Cell ID (hex) |
-| `tac` | Tracking Area Code (decimal). OpenCelliD uses this as the "LAC" field in its LTE cell search. |
 | `realtime_rx_thrpt` | Current download throughput (bytes/s) |
 | `realtime_tx_thrpt` | Current upload throughput (bytes/s) |
 | `realtime_rx_bytes` | Session total bytes received |
@@ -185,23 +184,14 @@ Sector        = 37,384,460 & 0xFF =      12   ← antenna sector on that tower
 
 ### Tower Cross-Reference
 
-The **eNB ID** is the stable cross-reference key for public tower databases:
+The **eNB ID** combined with **EARFCN** are the practical cross-reference keys for public tower databases.
 
-| Service | URL pattern |
+> **Note (firmware MC801A_Elisa3_B22):** TAC (Tracking Area Code), which OpenCelliD calls "LAC" in its LTE cell search form, is **not exposed** by this firmware through any known API field name (`tac`, `lte_tac`, `wan_lte_tac`, `lac`, etc. all return empty). The OpenCelliD bulk download (CSV) or their API can be searched by eNB ID directly as an alternative.
+
+| Service | How to find the tower |
 |---|---|
-| OpenCelliD | `https://opencellid.org` → search by MCC, MNC, eNB ID |
-| Mozilla Location Services | `https://location.services.mozilla.com` |
-
-> **OpenCelliD search requires four fields:** MCC, MNC, LAC, and Cell ID.
-> For LTE, **LAC = TAC** (Tracking Area Code) — the modem exposes this as the `tac` field.
-> Use the **eNB ID** as the Cell ID value in the search form.
->
-> Example for this installation (Telia Finland):
-> - MCC: `244`, MNC: `91`
-> - LAC (= TAC): value from `tac` modem field
-> - Cell ID: `145749` (eNB ID)
-
-For Telia Finland (MCC=244, MNC=91), search for eNB ID `145749` to locate the serving tower on a map and compare against the operator's published coverage data.
+| OpenCelliD | Bulk CSV download → filter by MCC=244, MNC=91, eNB ID=145749 |
+| Mozilla Location Services | Same approach via bulk download |
 
 ### Prometheus Metrics
 
@@ -214,8 +204,10 @@ The exporter exposes a `cellsentry_cell_decoded_info` gauge (always 1) that carr
 | `enb_id` | Base station identifier e.g. `145749` |
 | `sector` | Sector / antenna index e.g. `12` |
 | `pci_lte_dec` | LTE Physical Cell ID in decimal e.g. `486` |
-| `earfcn` | LTE EARFCN (channel frequency) |
-| `tac` | Tracking Area Code (= LAC in OpenCelliD) |
+| `pci_5g_dec` | 5G NR Physical Cell ID in decimal e.g. `199` |
+| `earfcn` | LTE EARFCN (channel frequency) e.g. `6300` (Band 20 downlink) |
+
+> **TAC/LAC not available:** Firmware MC801A_Elisa3_B22 does not expose the Tracking Area Code through any known API field. Use the eNB ID + EARFCN for tower identification via OpenCelliD bulk data.
 
 ---
 

@@ -376,14 +376,14 @@
     },
     {
       "id": 17,
-      "title": "TAC (LAC for OpenCelliD)",
+      "title": "EARFCN (LTE channel)",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 20, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
           "expr": "cellsentry_cell_decoded_info",
-          "legendFormat": "{{tac}}",
+          "legendFormat": "{{earfcn}}",
           "instant": true,
           "refId": "A"
         }
@@ -430,8 +430,8 @@
       "datasource": { "type": "prometheus", "uid": "cellsentry-prometheus" },
       "targets": [
         {
-          "expr": "cellsentry_modem_info",
-          "legendFormat": "{{pci_5g}}",
+          "expr": "cellsentry_cell_decoded_info",
+          "legendFormat": "{{pci_5g_dec}}",
           "instant": true,
           "refId": "A"
         }
