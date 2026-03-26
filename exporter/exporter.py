@@ -214,6 +214,15 @@ for _g in _SIGNAL_GAUGES_PLAIN:
     _g.set(_NaN)
 
 
+def _reset_signal_gauges() -> None:
+    """Set all signal gauges to NaN (used on session expiry so Grafana shows a
+    gap rather than the last real value appearing frozen/flat)."""
+    for _g in _SIGNAL_GAUGES_PLAIN:
+        _g.set(_NaN)
+    g_throughput.labels(direction="rx").set(_NaN)
+    g_throughput.labels(direction="tx").set(_NaN)
+
+
 def update_metrics(data: dict) -> None:
     global _prev_ppp_status, _last_info_labels
 
@@ -306,8 +315,11 @@ def scrape_loop() -> None:
             data = _get_cmd(session, CMD_FIELDS)
 
             if _all_unavailable(data):
-                # Session likely expired — re-authenticate on next iteration
+                # Session likely expired — reset gauges to NaN so Grafana shows
+                # a gap rather than the last real value appearing frozen/flat.
+                # Do NOT update the drop counter — this is not a real drop.
                 log.info("All fields unavailable; session may have expired. Re-authenticating.")
+                _reset_signal_gauges()
                 authenticated = False
                 g_scrape_success.set(0)
             else:
