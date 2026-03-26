@@ -381,10 +381,10 @@ def _make_styles() -> dict:
 # Table helpers
 # ---------------------------------------------------------------------------
 
-_TBL_HEADER = colors.HexColor("#0d1b2a")
+_TBL_HEADER = colors.HexColor("#dce8f5")
 _TBL_ROW1   = colors.HexColor("#eef2f7")
 _TBL_ROW2   = colors.white
-_TBL_TEXT   = colors.white
+_TBL_TEXT   = colors.HexColor("#0d1b2a")
 
 
 def _base_style(has_header: bool = True) -> list:
